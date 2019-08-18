@@ -14,11 +14,17 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import br.com.maddytec.domain.enums.Role;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "user")
 public class User implements Serializable {
 
