@@ -19,15 +19,21 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import br.com.maddytec.domain.enums.RequestState;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "request")
 public class Request implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1967396941273349952L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

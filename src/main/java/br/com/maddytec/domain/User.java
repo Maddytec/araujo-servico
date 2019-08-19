@@ -28,7 +28,7 @@ import lombok.Setter;
 @Entity(name = "user")
 public class User implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4709056733071254797L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +47,11 @@ public class User implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "owner")
 	private List<Request> requests = new ArrayList<>();
 
+	@Builder.Default
 	@OneToMany(mappedBy = "owner")
 	private List<RequestStage> stages = new ArrayList<>();
 }
