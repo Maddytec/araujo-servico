@@ -32,12 +32,12 @@ public class RequestService {
 		return result.get();
 	}
 
-	public List<Request> listAll() {
+	public List<Request> findAll() {
 		List<Request> requests = requestRepository.findAll();
 		return requests;
 	}
 
-	public List<Request> listAllByOwnerId(Long id) {
+	public List<Request> findAllByOwnerId(Long id) {
 		List<Request> requests = requestRepository.findAllByOwnerId(id);
 		return requests;
 	}

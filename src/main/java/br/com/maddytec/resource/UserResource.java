@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.maddytec.domain.Request;
 import br.com.maddytec.domain.User;
 import br.com.maddytec.dto.UserLoginDTO;
+import br.com.maddytec.service.RequestService;
 import br.com.maddytec.service.UserService;
 
 @RestController
@@ -24,6 +25,9 @@ public class UserResource {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private RequestService requestService;
 
 	@PostMapping
 	public ResponseEntity<User> save(@RequestBody User user) {
@@ -34,7 +38,7 @@ public class UserResource {
 	@PutMapping("/{id}")
 	public ResponseEntity<User> update(@PathVariable(name = "id") Long id, @RequestBody User user) {
 		user.setId(id);
-		User updatedUser = userService.save(user);
+		User updatedUser = userService.update(user);
 		return ResponseEntity.ok().body(updatedUser);
 	}
 
@@ -54,5 +58,11 @@ public class UserResource {
 		User loggedUser = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
 		return ResponseEntity.ok(loggedUser);
 		
+	}
+	
+	@GetMapping("/{ownerId}/requests")
+	public ResponseEntity<List<Request>> findAllRequestsByOwnerId(@PathVariable(name = "ownerId") Long ownerId) {
+		List<Request> requests = requestService.findAllByOwnerId(ownerId);
+		return ResponseEntity.ok(requests);
 	}
 }
