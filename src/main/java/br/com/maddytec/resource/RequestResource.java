@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.Request;
+import br.com.maddytec.domain.RequestStage;
 import br.com.maddytec.service.RequestService;
+import br.com.maddytec.service.RequestStageService;
 
 @RestController
 @RequestMapping(value = "requests")
@@ -22,6 +24,9 @@ public class RequestResource {
 
 	@Autowired
 	private RequestService requestService;
+	
+	@Autowired
+	RequestStageService requestStageService;
 
 	@PostMapping
 	public ResponseEntity<Request> save(@RequestBody Request request) {
@@ -46,6 +51,12 @@ public class RequestResource {
 	public ResponseEntity<List<Request>> findAll() {
 		List<Request> requests = requestService.findAll();
 		return ResponseEntity.ok(requests);
+	}
+
+	@GetMapping("/{id}/request-stages")
+	public ResponseEntity<List<RequestStage>> findRequestStageByRequestId(@PathVariable(name = "requestId") Long requestId) {
+		List<RequestStage> requestStages = requestStageService.findAllByRequestId(requestId);
+		return ResponseEntity.ok(requestStages);
 	}
 
 }

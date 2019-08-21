@@ -42,7 +42,7 @@ public class RequestStageService {
 		return result.get();
 	}
 	
-	public List<RequestStage> listAllByRequestId(Long requestId){
+	public List<RequestStage> findAllByRequestId(Long requestId){
 		List<RequestStage> stages = requestStageRepository.findAllByRequestId(requestId);
 		return stages;
 	}

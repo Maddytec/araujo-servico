@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.Request;
+import br.com.maddytec.domain.RequestStage;
 import br.com.maddytec.domain.User;
 import br.com.maddytec.dto.UserLoginDTO;
 import br.com.maddytec.service.RequestService;
+import br.com.maddytec.service.RequestStageService;
 import br.com.maddytec.service.UserService;
 
 @RestController
@@ -25,7 +27,7 @@ public class UserResource {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private RequestService requestService;
 
@@ -57,12 +59,13 @@ public class UserResource {
 	public ResponseEntity<User> login(@RequestBody UserLoginDTO userLoginDTO) {
 		User loggedUser = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
 		return ResponseEntity.ok(loggedUser);
-		
+
 	}
-	
+
 	@GetMapping("/{ownerId}/requests")
 	public ResponseEntity<List<Request>> findAllRequestsByOwnerId(@PathVariable(name = "ownerId") Long ownerId) {
 		List<Request> requests = requestService.findAllByOwnerId(ownerId);
 		return ResponseEntity.ok(requests);
 	}
+
 }
