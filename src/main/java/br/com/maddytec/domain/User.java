@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.maddytec.domain.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +42,7 @@ public class User implements Serializable {
 	@Column(length = 75, nullable = false, unique = true)
 	private String email;
 
+	@Getter(onMethod = @__({@JsonIgnore}))
 	@Column(length = 100, nullable = false)
 	private String password;
 
@@ -47,11 +50,10 @@ public class User implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@Builder.Default
+	@Getter(onMethod = @__({@JsonIgnore}))
 	@OneToMany(mappedBy = "owner")
 	private List<Request> requests = new ArrayList<>();
 
-	@Builder.Default
 	@OneToMany(mappedBy = "owner")
 	private List<RequestStage> stages = new ArrayList<>();
 }

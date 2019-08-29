@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.Request;
-import br.com.maddytec.domain.RequestStage;
 import br.com.maddytec.domain.User;
 import br.com.maddytec.dto.UserLoginDTO;
 import br.com.maddytec.service.RequestService;
-import br.com.maddytec.service.RequestStageService;
 import br.com.maddytec.service.UserService;
 
 @RestController
