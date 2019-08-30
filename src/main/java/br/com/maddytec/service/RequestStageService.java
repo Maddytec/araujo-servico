@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import br.com.maddytec.domain.Request;
 import br.com.maddytec.domain.RequestStage;
 import br.com.maddytec.domain.enums.RequestState;
+import br.com.maddytec.exception.NotFoundException;
 import br.com.maddytec.repository.RequestRepository;
 import br.com.maddytec.repository.RequestStageRepository;
 
@@ -39,7 +40,7 @@ public class RequestStageService {
 
 	public RequestStage findById(Long id) {
 		Optional<RequestStage> result = requestStageRepository.findById(id);
-		return result.get();
+		return result.orElseThrow(() -> new NotFoundException("Not exist request stage with id: " + id));
 	}
 	
 	public List<RequestStage> findAllByRequestId(Long requestId){

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.maddytec.domain.User;
+import br.com.maddytec.exception.NotFoundException;
 import br.com.maddytec.repository.UserRepository;
 import br.com.maddytec.util.HashUtil;
 
@@ -28,7 +29,7 @@ public class UserService {
 
 	public User findById(Long id) {
 		Optional<User> result = userReposotory.findById(id);
-		return result.get();
+		return result.orElseThrow(() -> new NotFoundException("Not exist user with id: " + id));
 	}
 
 	public List<User> findAll() {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.maddytec.domain.Request;
 import br.com.maddytec.domain.enums.RequestState;
+import br.com.maddytec.exception.NotFoundException;
 import br.com.maddytec.repository.RequestRepository;
 
 @Service
@@ -29,7 +30,7 @@ public class RequestService {
 
 	public Request findById(Long id) {
 		Optional<Request> result = requestRepository.findById(id);
-		return result.get();
+		return result.orElseThrow(() -> new NotFoundException("Not exist request with id: " + id));
 	}
 
 	public List<Request> findAll() {
