@@ -48,6 +48,7 @@ public class UserResource {
 		return ResponseEntity.ok().body(user);
 	}
 
+	@GetMapping
 	public ResponseEntity<List<User>> findAll() {
 		List<User> users = userService.findAll();
 		return ResponseEntity.ok(users);
