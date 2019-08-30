@@ -54,6 +54,7 @@ public class User implements Serializable {
 	@OneToMany(mappedBy = "owner")
 	private List<Request> requests = new ArrayList<>();
 
+	@Getter(onMethod = @__({@JsonIgnore}))
 	@OneToMany(mappedBy = "owner")
 	private List<RequestStage> stages = new ArrayList<>();
 }
