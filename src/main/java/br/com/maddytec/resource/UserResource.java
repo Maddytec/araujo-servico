@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.Request;
 import br.com.maddytec.domain.User;
 import br.com.maddytec.dto.UserLoginDTO;
+import br.com.maddytec.model.PageModel;
+import br.com.maddytec.model.PageRequestModel;
 import br.com.maddytec.service.RequestService;
 import br.com.maddytec.service.UserService;
 
@@ -52,6 +55,17 @@ public class UserResource {
 	public ResponseEntity<List<User>> findAll() {
 		List<User> users = userService.findAll();
 		return ResponseEntity.ok(users);
+	}
+
+	@GetMapping("/v2") //Lazy loading
+	public ResponseEntity<PageModel<User>> findAll(
+			@RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size) {
+
+		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
+
+		PageModel<User> pageModel = userService.findAllOnLazyMode(pageRequestModel);
+		return ResponseEntity.ok(pageModel);
 	}
 
 	@PostMapping("/{login}")

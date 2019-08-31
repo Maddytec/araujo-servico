@@ -4,10 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import br.com.maddytec.domain.User;
 import br.com.maddytec.exception.NotFoundException;
+import br.com.maddytec.model.PageModel;
+import br.com.maddytec.model.PageRequestModel;
 import br.com.maddytec.repository.UserRepository;
 import br.com.maddytec.util.HashUtil;
 
@@ -35,6 +39,13 @@ public class UserService {
 	public List<User> findAll() {
 		List<User> users = userReposotory.findAll();
 		return users;
+	}
+
+	public PageModel<User> findAllOnLazyMode(PageRequestModel pageRequestModel) {
+		PageRequest pageable = PageRequest.of(pageRequestModel.getPage(), pageRequestModel.getSize());
+		Page<User> page = userReposotory.findAll(pageable);
+
+		return new PageModel<>((int) page.getTotalElements(), page.getSize(), page.getTotalPages(), page.getContent());
 	}
 
 	public User login(String email, String password) {
