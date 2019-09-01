@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.Request;
 import br.com.maddytec.domain.RequestStage;
+import br.com.maddytec.model.PageModel;
+import br.com.maddytec.model.PageRequestModel;
 import br.com.maddytec.service.RequestService;
 import br.com.maddytec.service.RequestStageService;
 
@@ -52,11 +55,36 @@ public class RequestResource {
 		List<Request> requests = requestService.findAll();
 		return ResponseEntity.ok(requests);
 	}
+	
+	@GetMapping("/v2") // OnLazy
+	public ResponseEntity<PageModel<Request>> findAll(
+			@RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size) {
+		
+		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
+						
+		PageModel<Request> pageModel = requestService.findAllOnLazyModel(pageRequestModel);
+		
+		return ResponseEntity.ok(pageModel);
+	}
 
-	@GetMapping("/{id}/request-stages")
+	@GetMapping("/{requestId}/request-stages")
 	public ResponseEntity<List<RequestStage>> findRequestStageByRequestId(@PathVariable(name = "requestId") Long requestId) {
 		List<RequestStage> requestStages = requestStageService.findAllByRequestId(requestId);
 		return ResponseEntity.ok(requestStages);
 	}
 
+	@GetMapping("/v2/{requestId}/request-stages")
+	public ResponseEntity<PageModel<RequestStage>> findRequestStageByRequestId(
+			@PathVariable(name = "requestId") Long requestId,
+			@RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size) {
+		
+		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
+		
+		PageModel<RequestStage> pageModelRequestStage = requestStageService.findAllByRequestId(requestId, pageRequestModel);
+		
+		return ResponseEntity.ok(pageModelRequestStage);
+	}
+	
 }

@@ -43,7 +43,7 @@ public class RequestStage implements Serializable {
 	@Column(columnDefinition = "text")
 	private String description;
 
-	@Column(name = "request_date", length = 12, nullable = false)
+	@Column(name = "state", length = 12, nullable = false)
 	@Enumerated(EnumType.STRING)
 	private RequestState state;
 

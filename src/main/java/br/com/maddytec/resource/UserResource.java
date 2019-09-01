@@ -81,4 +81,15 @@ public class UserResource {
 		return ResponseEntity.ok(requests);
 	}
 
+	@GetMapping("/v2/{ownerId}/requests") // OnLazyMode
+	public ResponseEntity<PageModel<Request>> findAllByOwnerIdOnLazyModel(
+			@PathVariable(name = "ownerId") Long ownerId,
+			@RequestParam(name = "size") int size,
+			@RequestParam(name = "page") int page ) {
+		
+		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
+		PageModel<Request> pageModel = requestService.findAllByOwnerIdOnLazyModel(ownerId, pageRequestModel);
+		
+		return ResponseEntity.ok(pageModel);
+	}
 }
