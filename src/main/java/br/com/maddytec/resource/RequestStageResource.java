@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.RequestStage;
+import br.com.maddytec.model.PageModel;
+import br.com.maddytec.model.PageRequestModel;
 import br.com.maddytec.service.RequestStageService;
 
 @RestController
@@ -30,5 +33,18 @@ public class RequestStageResource {
 	public ResponseEntity<RequestStage> findById(@PathVariable(name = "id") Long id){
 		RequestStage requestStage = requestStageService.findById(id);
 		return ResponseEntity.ok(requestStage);
+	}
+	
+	@GetMapping("/v2/{idRequest}") //Lazy Loading
+	public ResponseEntity<PageModel<RequestStage>> findAllByRequestId(
+			@PathVariable(name = "idRequest") Long requestId,
+			@RequestParam(value = "page", defaultValue = "0" ) int page,
+			@RequestParam(value = "size", defaultValue = "10") int size){
+		
+		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
+				
+		PageModel<RequestStage> pageModel = requestStageService.findAllByRequestId(requestId, pageRequestModel);
+		
+		return ResponseEntity.ok(pageModel);
 	}
 }

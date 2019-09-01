@@ -59,8 +59,8 @@ public class UserResource {
 
 	@GetMapping("/v2") //Lazy loading
 	public ResponseEntity<PageModel<User>> findAll(
-			@RequestParam(value = "page") int page,
-			@RequestParam(value = "size") int size) {
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size) {
 
 		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
 
@@ -84,8 +84,8 @@ public class UserResource {
 	@GetMapping("/v2/{ownerId}/requests") // OnLazyMode
 	public ResponseEntity<PageModel<Request>> findAllByOwnerIdOnLazyModel(
 			@PathVariable(name = "ownerId") Long ownerId,
-			@RequestParam(name = "size") int size,
-			@RequestParam(name = "page") int page ) {
+			@RequestParam(name = "size", defaultValue = "0") int size,
+			@RequestParam(name = "page", defaultValue = "10") int page ) {
 		
 		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
 		PageModel<Request> pageModel = requestService.findAllByOwnerIdOnLazyModel(ownerId, pageRequestModel);

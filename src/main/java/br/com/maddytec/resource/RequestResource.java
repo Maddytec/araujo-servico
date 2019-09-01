@@ -58,8 +58,8 @@ public class RequestResource {
 	
 	@GetMapping("/v2") // OnLazy
 	public ResponseEntity<PageModel<Request>> findAll(
-			@RequestParam(value = "page") int page,
-			@RequestParam(value = "size") int size) {
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size) {
 		
 		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
 						
@@ -77,8 +77,8 @@ public class RequestResource {
 	@GetMapping("/v2/{requestId}/request-stages")
 	public ResponseEntity<PageModel<RequestStage>> findRequestStageByRequestId(
 			@PathVariable(name = "requestId") Long requestId,
-			@RequestParam(value = "page") int page,
-			@RequestParam(value = "size") int size) {
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size) {
 		
 		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
 		
