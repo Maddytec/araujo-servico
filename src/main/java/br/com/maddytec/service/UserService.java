@@ -53,4 +53,8 @@ public class UserService {
 		Optional<User> result = userReposotory.login(email, password);
 		return result.get();
 	}
+
+	public int updateRole(User user) {
+		return userReposotory.updateRole(user.getId(), user.getRole());
+	}
 }

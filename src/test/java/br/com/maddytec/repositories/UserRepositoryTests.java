@@ -43,7 +43,7 @@ public class UserRepositoryTests {
 		user.setName("Madson Silva");
 		user.setPassword("1234");
 		user.setRole(Role.ADMINISTRATOR);
-		
+
 		User updateUser = userRepository.save(user);
 
 		assertThat(updateUser.getName()).isEqualTo("Madson Silva");
@@ -69,5 +69,11 @@ public class UserRepositoryTests {
 		User loggedUser = result.get();
 
 		assertThat(loggedUser.getId()).isEqualTo(1L);
+	}
+
+	@Test
+	public void updateRoleTest() {
+		int rowsEffected = userRepository.updateRole(2L, Role.ADMINISTRATOR);
+		assertThat(rowsEffected).isEqualTo(1);
 	}
 }

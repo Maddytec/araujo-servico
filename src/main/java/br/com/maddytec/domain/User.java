@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import br.com.maddytec.domain.enums.Role;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,7 @@ public class User implements Serializable {
 	private String email;
 
 	@Getter(onMethod = @__({@JsonIgnore}))
+	@Setter(onMethod = @__({@JsonProperty}))
 	@Column(length = 100, nullable = false)
 	private String password;
 
@@ -52,9 +54,11 @@ public class User implements Serializable {
 
 	@Getter(onMethod = @__({@JsonIgnore}))
 	@OneToMany(mappedBy = "owner")
+	@Builder.Default
 	private List<Request> requests = new ArrayList<>();
 
 	@Getter(onMethod = @__({@JsonIgnore}))
 	@OneToMany(mappedBy = "owner")
+	@Builder.Default
 	private List<RequestStage> stages = new ArrayList<>();
 }
