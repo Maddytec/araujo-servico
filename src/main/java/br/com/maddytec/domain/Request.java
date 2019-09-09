@@ -47,9 +47,9 @@ public class Request implements Serializable {
 	@Column(columnDefinition = "text")
 	private String description;
 
-	@Column(name = "criation_date", nullable = false)
+	@Column(name = "creation_date", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date criationDate;
+	private Date creationDate;
 
 	@Column(length = 12, nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -59,6 +59,7 @@ public class Request implements Serializable {
 	@JoinColumn(name = "owner_id", nullable = false)
 	private User owner;
 
+	@Builder.Default
 	@Getter(onMethod = @__({@JsonIgnore}))
 	@OneToMany(mappedBy = "request")
 	private List<RequestStage> stages = new ArrayList<>();
