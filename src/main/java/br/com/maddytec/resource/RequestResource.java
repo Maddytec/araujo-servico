@@ -2,6 +2,8 @@ package br.com.maddytec.resource;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.Request;
 import br.com.maddytec.domain.RequestStage;
+import br.com.maddytec.dto.RequestSaveDTO;
+import br.com.maddytec.dto.RequestUpdateDTO;
 import br.com.maddytec.model.PageModel;
 import br.com.maddytec.model.PageRequestModel;
 import br.com.maddytec.service.RequestService;
@@ -32,13 +36,14 @@ public class RequestResource {
 	RequestStageService requestStageService;
 
 	@PostMapping
-	public ResponseEntity<Request> save(@RequestBody Request request) {
-		Request createdRequest = requestService.save(request);
+	public ResponseEntity<Request> save(@RequestBody @Valid RequestSaveDTO requestSaveDTO) {
+		Request createdRequest = requestService.save(requestSaveDTO.converterToRequest(requestSaveDTO));
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdRequest);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Request> update(@PathVariable(name = "id") Long id, @RequestBody Request request) {
+	public ResponseEntity<Request> update(@PathVariable(name = "id") Long id, @RequestBody @Valid RequestUpdateDTO requestUpdateDTO) {
+		Request request = requestUpdateDTO.converterToRequest(requestUpdateDTO);
 		request.setId(id);
 		Request createdRequest = requestService.update(request);
 		return ResponseEntity.ok(createdRequest);

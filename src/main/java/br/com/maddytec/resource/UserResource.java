@@ -40,17 +40,18 @@ public class UserResource {
 
 	@PostMapping
 	public ResponseEntity<User> save(@RequestBody @Valid UserSaveDTO userSaveDTO) {
-		
+
 		User createdUser = userService.save(userSaveDTO.converterToUser(userSaveDTO));
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<User> update(@PathVariable(name = "id") Long id, @RequestBody @Valid UserUpdateDTO userUpdateDTO) {
-		
+	public ResponseEntity<User> update(@PathVariable(name = "id") Long id,
+			@RequestBody @Valid UserUpdateDTO userUpdateDTO) {
+
 		User user = userUpdateDTO.converterToUser(userUpdateDTO);
 		user.setId(id);
-		
+
 		User updatedUser = userService.update(user);
 		return ResponseEntity.ok().body(updatedUser);
 	}
@@ -67,9 +68,8 @@ public class UserResource {
 		return ResponseEntity.ok(users);
 	}
 
-	@GetMapping("/v2") //Lazy loading
-	public ResponseEntity<PageModel<User>> findAll(
-			@RequestParam(value = "page", defaultValue = "0") int page,
+	@GetMapping("/v2") // Lazy loading
+	public ResponseEntity<PageModel<User>> findAll(@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size) {
 
 		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
@@ -79,7 +79,7 @@ public class UserResource {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<User> login(@RequestBody @Valid  UserLoginDTO userLoginDTO) {
+	public ResponseEntity<User> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
 		User loggedUser = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
 		return ResponseEntity.ok(loggedUser);
 	}
@@ -91,28 +91,26 @@ public class UserResource {
 	}
 
 	@GetMapping("/v2/{ownerId}/requests") // OnLazyMode
-	public ResponseEntity<PageModel<Request>> findAllByOwnerIdOnLazyModel(
-			@PathVariable(name = "ownerId") Long ownerId,
+	public ResponseEntity<PageModel<Request>> findAllByOwnerIdOnLazyModel(@PathVariable(name = "ownerId") Long ownerId,
 			@RequestParam(name = "size", defaultValue = "0") int size,
-			@RequestParam(name = "page", defaultValue = "10") int page ) {
-		
+			@RequestParam(name = "page", defaultValue = "10") int page) {
+
 		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
 		PageModel<Request> pageModel = requestService.findAllByOwnerIdOnLazyModel(ownerId, pageRequestModel);
-		
+
 		return ResponseEntity.ok(pageModel);
 	}
-	
+
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> updateRole(
-			@RequestBody @Valid UserUpdateRoleDTO userUpdateRoleDTO, 
-			@PathVariable(name = "id") Long id){
-		
-		User user = User.builder()
+	public ResponseEntity<?> updateRole(@RequestBody @Valid UserUpdateRoleDTO userUpdateRoleDTO,
+			@PathVariable(name = "id") Long id) {
+
+		userService.updateRole(
+				  User.builder()
+				.id(id)
 				.role(userUpdateRoleDTO.getRole())
-				.id(id).build();
-		
-		userService.updateRole(user);
-		
+				.build());
+
 		return ResponseEntity.ok().build();
 	}
 }
