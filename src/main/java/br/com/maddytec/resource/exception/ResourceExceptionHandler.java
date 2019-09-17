@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +24,18 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<ApiError> handlerNotFoundException(NotFoundException notFoundException) {
 		ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(), notFoundException.getMessage(), new Date());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+	}
+	
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ApiError> handlerBadCredentialsException(BadCredentialsException badCredentialsException) {
+		ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), badCredentialsException.getMessage(), new Date());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiError> handlerAccessDeniedException(AccessDeniedException accessDeniedException) {
+		ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), accessDeniedException.getMessage(), new Date());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
 	}
 
 	@Override

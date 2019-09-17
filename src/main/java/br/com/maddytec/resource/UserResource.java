@@ -1,12 +1,19 @@
 package br.com.maddytec.resource;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +32,7 @@ import br.com.maddytec.dto.UserUpdateDTO;
 import br.com.maddytec.dto.UserUpdateRoleDTO;
 import br.com.maddytec.model.PageModel;
 import br.com.maddytec.model.PageRequestModel;
+import br.com.maddytec.security.JwtManager;
 import br.com.maddytec.service.RequestService;
 import br.com.maddytec.service.UserService;
 
@@ -38,6 +46,13 @@ public class UserResource {
 	@Autowired
 	private RequestService requestService;
 
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private JwtManager jwtManager;
+
+	@Secured({ "ROLE_ADMINSTRATOR" })
 	@PostMapping
 	public ResponseEntity<User> save(@RequestBody @Valid UserSaveDTO userSaveDTO) {
 
@@ -45,6 +60,7 @@ public class UserResource {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
 	}
 
+	@PreAuthorize("@accessManager.isOwner(#id)")
 	@PutMapping("/{id}")
 	public ResponseEntity<User> update(@PathVariable(name = "id") Long id,
 			@RequestBody @Valid UserUpdateDTO userUpdateDTO) {
@@ -79,9 +95,24 @@ public class UserResource {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<User> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
-		User loggedUser = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
-		return ResponseEntity.ok(loggedUser);
+	public ResponseEntity<String> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+				userLoginDTO.getEmail(), userLoginDTO.getPassword());
+
+		Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		org.springframework.security.core.userdetails.User userdetails = (org.springframework.security.core.userdetails.User) authentication
+				.getPrincipal();
+
+		String email = userdetails.getUsername();
+		List<String> roles = userdetails.getAuthorities().stream().map(authority -> authority.getAuthority())
+				.collect(Collectors.toList());
+
+		String token = jwtManager.createToken(email, roles);
+
+		return ResponseEntity.ok(token);
 	}
 
 	@GetMapping("/{ownerId}/requests")
@@ -101,15 +132,12 @@ public class UserResource {
 		return ResponseEntity.ok(pageModel);
 	}
 
+	@Secured({ "ROLE_ADMINISTRATOR" })
 	@PatchMapping("/{id}")
 	public ResponseEntity<?> updateRole(@RequestBody @Valid UserUpdateRoleDTO userUpdateRoleDTO,
 			@PathVariable(name = "id") Long id) {
 
-		userService.updateRole(
-				  User.builder()
-				.id(id)
-				.role(userUpdateRoleDTO.getRole())
-				.build());
+		userService.updateRole(User.builder().id(id).role(userUpdateRoleDTO.getRole()).build());
 
 		return ResponseEntity.ok().build();
 	}
