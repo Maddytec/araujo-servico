@@ -1,5 +1,9 @@
 package br.com.maddytec.security;
 
+import java.util.Collections;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +17,9 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import br.com.maddytec.service.UserService;
 
@@ -43,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.anyRequest().authenticated();
 		
 		http.addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilter(corsFilter());
 	}
 
 	@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
@@ -50,5 +58,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		// TODO Auto-generated method stub
 		return super.authenticationManagerBean();
+	}
+	
+	public CorsFilter corsFilter() {
+	    final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    final CorsConfiguration config = new CorsConfiguration();
+	    config.setAllowCredentials(true);
+	    config.addAllowedOrigin("*");
+	    config.addAllowedHeader("*");
+	    config.addAllowedMethod("OPTIONS");
+	    config.addAllowedMethod("HEAD");
+	    config.addAllowedMethod("GET");
+	    config.addAllowedMethod("PUT");
+	    config.addAllowedMethod("POST");
+	    config.addAllowedMethod("DELETE");
+	    config.addAllowedMethod("PATCH");
+	    source.registerCorsConfiguration("/**", config);
+	    return new CorsFilter(source);
 	}
 }

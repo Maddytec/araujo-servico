@@ -42,6 +42,10 @@ public class UserService implements UserDetailsService {
 		return result.orElseThrow(() -> new NotFoundException("Not exist user with id: " + id));
 	}
 
+	public void deleteById(Long id) {
+		userReposotory.deleteById(id);
+	}
+
 	public List<User> findAll() {
 		List<User> users = userReposotory.findAll();
 		return users;

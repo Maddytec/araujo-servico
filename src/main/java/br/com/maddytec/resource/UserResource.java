@@ -14,6 +14,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.maddytec.domain.Request;
 import br.com.maddytec.domain.User;
+import br.com.maddytec.domain.enums.Role;
 import br.com.maddytec.dto.UserLoginDTO;
 import br.com.maddytec.dto.UserSaveDTO;
 import br.com.maddytec.dto.UserUpdateDTO;
@@ -36,6 +39,7 @@ import br.com.maddytec.security.JwtManager;
 import br.com.maddytec.service.RequestService;
 import br.com.maddytec.service.UserService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "users")
 public class UserResource {
@@ -52,7 +56,7 @@ public class UserResource {
 	@Autowired
 	private JwtManager jwtManager;
 
-	@Secured({ "ROLE_ADMINSTRATOR" })
+	@Secured({ "ROLE_ADMINISTRATOR" })
 	@PostMapping
 	public ResponseEntity<User> save(@RequestBody @Valid UserSaveDTO userSaveDTO) {
 
@@ -85,7 +89,8 @@ public class UserResource {
 	}
 
 	@GetMapping("/v2") // Lazy loading
-	public ResponseEntity<PageModel<User>> findAll(@RequestParam(value = "page", defaultValue = "0") int page,
+	public ResponseEntity<PageModel<User>> findAll(
+			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size) {
 
 		PageRequestModel pageRequestModel = new PageRequestModel(page, size);
@@ -95,7 +100,7 @@ public class UserResource {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
+	public ResponseEntity<UserLoginDTO> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
 		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 				userLoginDTO.getEmail(), userLoginDTO.getPassword());
 
@@ -109,10 +114,10 @@ public class UserResource {
 		String email = userdetails.getUsername();
 		List<String> roles = userdetails.getAuthorities().stream().map(authority -> authority.getAuthority())
 				.collect(Collectors.toList());
-
+		
 		String token = jwtManager.createToken(email, roles);
-
-		return ResponseEntity.ok(token);
+		userLoginDTO.setPassword(token);
+		return ResponseEntity.ok(userLoginDTO);
 	}
 
 	@GetMapping("/{ownerId}/requests")
@@ -141,4 +146,13 @@ public class UserResource {
 
 		return ResponseEntity.ok().build();
 	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long id) {
+		userService.deleteById(id);
+		return ResponseEntity.ok().body(HttpStatus.OK);
+	}
+	
+	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,14 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 		ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(), notFoundException.getMessage(), new Date());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
 	}
-	
+
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ApiError> handlerBadCredentialsException(BadCredentialsException badCredentialsException) {
-		ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), badCredentialsException.getMessage(), new Date());
+		ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), badCredentialsException.getMessage(),
+				new Date());
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
 	}
-	
+
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ApiError> handlerAccessDeniedException(AccessDeniedException accessDeniedException) {
 		ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), accessDeniedException.getMessage(), new Date());
@@ -42,12 +44,23 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		List<String> errors = new ArrayList<>(); 
-				ex.getBindingResult().getAllErrors().forEach(error -> {
-					errors.add(error.getDefaultMessage());
-				});
-				
+		List<String> errors = new ArrayList<>();
+		ex.getBindingResult().getAllErrors().forEach(error -> {
+			errors.add(error.getDefaultMessage());
+		});
+
 		String defaultMessage = "Invalid field(s)";
+		ApiErroList error = new ApiErroList(HttpStatus.BAD_REQUEST.value(), defaultMessage, new Date(), errors);
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<ApiError> handlerSQLException(ConstraintViolationException ex) {
+		String defaultMessage = "Email já consta cadastrado";		
+		List<String> errors = new ArrayList<>();
+			errors.add(defaultMessage);
+
 		ApiErroList error = new ApiErroList(HttpStatus.BAD_REQUEST.value(), defaultMessage, new Date(), errors);
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
