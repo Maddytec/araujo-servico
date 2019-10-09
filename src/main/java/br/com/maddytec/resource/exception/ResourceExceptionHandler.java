@@ -28,16 +28,25 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<ApiError> handlerBadCredentialsException(BadCredentialsException badCredentialsException) {
-		ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), badCredentialsException.getMessage(),
-				new Date());
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
+	public ResponseEntity<ApiError> handlerBadCredentialsException(BadCredentialsException ex) {
+		String defaultMessage = ex.getMessage();
+		List<String> errors = new ArrayList<>();
+		errors.add(defaultMessage);
+
+		ApiErroList error = new ApiErroList(HttpStatus.UNAUTHORIZED.value(), defaultMessage, new Date(), errors);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ApiError> handlerAccessDeniedException(AccessDeniedException accessDeniedException) {
-		ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), accessDeniedException.getMessage(), new Date());
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+		String defaultMessage = "Usuario não possui permissão para está solicitação.";
+		List<String> errors = new ArrayList<>();
+		errors.add(defaultMessage);
+
+		ApiErroList error = new ApiErroList(HttpStatus.UNAUTHORIZED.value(), defaultMessage, new Date(), errors);
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
 	}
 
 	@Override
@@ -57,9 +66,9 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<ApiError> handlerSQLException(ConstraintViolationException ex) {
-		String defaultMessage = "Email já consta cadastrado";		
+		String defaultMessage = "Email já consta cadastrado";
 		List<String> errors = new ArrayList<>();
-			errors.add(defaultMessage);
+		errors.add(defaultMessage);
 
 		ApiErroList error = new ApiErroList(HttpStatus.BAD_REQUEST.value(), defaultMessage, new Date(), errors);
 
